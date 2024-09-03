@@ -190,7 +190,6 @@ public class DiscoClient {
         return future;
     }
 
-
     public List<Pkg> getPkgs(final List<Distribution> distributions, final VersionNumber versionNumber, final Latest latest, final OperatingSystem operatingSystem,
                              final LibCType libcType, final Architecture architecture, final Bitness bitness, final ArchiveType archiveType, final PackageType packageType,
                              final Boolean javafxBundled, final Boolean directlyDownloadable, final List<ReleaseStatus> releaseStatus, final TermOfSupport termOfSupport, final List<Scope> scopes, final Match match) {
@@ -199,6 +198,12 @@ public class DiscoClient {
     public List<Pkg> getPkgs(final List<Distribution> distributions, final VersionNumber versionNumber, final Latest latest, final OperatingSystem operatingSystem,
                              final LibCType libcType, final Architecture architecture, final Bitness bitness, final ArchiveType archiveType, final PackageType packageType,
                              final Boolean javafxBundled, final Boolean directlyDownloadable, final List<ReleaseStatus> releaseStatus, final TermOfSupport termOfSupport, final List<String> ftrs, final List<Scope> scopes, final Match match) {
+        return getPkgs(distributions, versionNumber, latest, List.of(operatingSystem), List.of(libcType), List.of(architecture), bitness, List.of(archiveType), packageType, javafxBundled, directlyDownloadable, releaseStatus, termOfSupport, ftrs, scopes, match);
+    }
+    public List<Pkg> getPkgs(final List<Distribution> distributions, final VersionNumber versionNumber, final Latest latest, final List<OperatingSystem> operatingSystems,
+                             final List<LibCType> libcTypes, final List<Architecture> architectures, final Bitness bitness, final List<ArchiveType> archiveTypes,
+                             final PackageType packageType, final Boolean javafxBundled, final Boolean directlyDownloadable, final List<ReleaseStatus> releaseStatus,
+                             final TermOfSupport termOfSupport, final List<String> ftrs, final List<Scope> scopes, final Match match) {
 
         StringBuilder queryBuilder = new StringBuilder().append(PropertyManager.INSTANCE.getString(Constants.PROPERTY_KEY_DISCO_URL))
                                                         .append(PropertyManager.INSTANCE.getPackagesPath());
@@ -223,19 +228,31 @@ public class DiscoClient {
             queryBuilder.append(Constants.API_LATEST).append("=").append(latest.getApiString());
         }
 
-        if (null != operatingSystem && OperatingSystem.NONE != operatingSystem && OperatingSystem.NOT_FOUND != operatingSystem) {
-            queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-            queryBuilder.append(Constants.API_OPERATING_SYSTEM).append("=").append(operatingSystem.getApiString());
+        if (null != operatingSystems && !operatingSystems.isEmpty()) {
+            operatingSystems.forEach(operatingSystem -> {
+                if (null != operatingSystem && OperatingSystem.NONE != operatingSystem && OperatingSystem.NOT_FOUND != operatingSystem) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_OPERATING_SYSTEM).append("=").append(operatingSystem.getApiString());
+                }
+            });
         }
 
-        if (null != libcType && LibCType.NONE != libcType && LibCType.NOT_FOUND != libcType) {
-            queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-            queryBuilder.append(Constants.API_LIBC_TYPE).append("=").append(libcType.getApiString());
+        if (null != libcTypes && !libcTypes.isEmpty()) {
+            libcTypes.forEach(libcType -> {
+                if (null != libcType && LibCType.NONE != libcType && LibCType.NOT_FOUND != libcType) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_LIBC_TYPE).append("=").append(libcType.getApiString());
+                }
+            });
         }
 
-        if (null != architecture && Architecture.NONE != architecture && Architecture.NOT_FOUND != architecture) {
-            queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-            queryBuilder.append(Constants.API_ARCHITECTURE).append("=").append(architecture.getApiString());
+        if (null != architectures && !architectures.isEmpty()) {
+            architectures.forEach(architecture -> {
+                if (null != architecture && Architecture.NONE != architecture && Architecture.NOT_FOUND != architecture) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_ARCHITECTURE).append("=").append(architecture.getApiString());
+                }
+            });
         }
 
         if (null != bitness && Bitness.NONE != bitness && Bitness.NOT_FOUND != bitness) {
@@ -243,9 +260,13 @@ public class DiscoClient {
             queryBuilder.append(Constants.API_BITNESS).append("=").append(bitness.getApiString());
         }
 
-        if (null != archiveType && ArchiveType.NONE != archiveType && ArchiveType.NOT_FOUND != archiveType) {
-            queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-            queryBuilder.append(Constants.API_ARCHIVE_TYPE).append("=").append(archiveType.getApiString());
+        if (null != archiveTypes && !archiveTypes.isEmpty()) {
+            archiveTypes.forEach(archiveType -> {
+                if (null != archiveType && ArchiveType.NONE != archiveType && ArchiveType.NOT_FOUND != archiveType) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_ARCHIVE_TYPE).append("=").append(archiveType.getApiString());
+                }
+            });
         }
 
         if (null != packageType && PackageType.NONE != packageType && PackageType.NOT_FOUND != packageType) {
@@ -346,9 +367,14 @@ public class DiscoClient {
         return getPkgsAsync(distributions, versionNumber, latest, operatingSystem, libCType, architecture, bitness, archiveType, packageType, javafxBundled, directlyDownloadable, releaseStatus, termOfSupport, new ArrayList<>(), scopes, match);
     }
     public CompletableFuture<List<Pkg>> getPkgsAsync(final List<Distribution> distributions, final VersionNumber versionNumber, final Latest latest, final OperatingSystem operatingSystem,
-                                                 final LibCType libCType, final Architecture architecture, final Bitness bitness, final ArchiveType archiveType, final PackageType packageType,
+                                                 final LibCType libcType, final Architecture architecture, final Bitness bitness, final ArchiveType archiveType, final PackageType packageType,
                                                  final Boolean javafxBundled, final Boolean directlyDownloadable, final List<ReleaseStatus> releaseStatus, final TermOfSupport termOfSupport, final List<String> ftrs, final List<Scope> scopes, final Match match) {
-
+        return getPkgsAsync(distributions, versionNumber, latest, List.of(operatingSystem), List.of(libcType), List.of(architecture), bitness, List.of(archiveType), packageType, javafxBundled, directlyDownloadable, releaseStatus, termOfSupport, ftrs, scopes, match);
+    }
+    public CompletableFuture<List<Pkg>> getPkgsAsync(final List<Distribution> distributions, final VersionNumber versionNumber, final Latest latest, final List<OperatingSystem> operatingSystems,
+                                                     final List<LibCType> libcTypes, final List<Architecture> architectures, final Bitness bitness, final List<ArchiveType> archiveTypes,
+                                                     final PackageType packageType, final Boolean javafxBundled, final Boolean directlyDownloadable, final List<ReleaseStatus> releaseStatus,
+                                                     final TermOfSupport termOfSupport, final List<String> ftrs, final List<Scope> scopes, final Match match) {
     StringBuilder queryBuilder = new StringBuilder().append(PropertyManager.INSTANCE.getString(Constants.PROPERTY_KEY_DISCO_URL))
                                                     .append(PropertyManager.INSTANCE.getPackagesPath());
     final int initialLength = queryBuilder.length();
@@ -372,30 +398,46 @@ public class DiscoClient {
         queryBuilder.append(Constants.API_LATEST).append("=").append(latest.getApiString());
     }
 
-    if (null != operatingSystem && OperatingSystem.NONE != operatingSystem && OperatingSystem.NOT_FOUND != operatingSystem) {
-        queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-        queryBuilder.append(Constants.API_OPERATING_SYSTEM).append("=").append(operatingSystem.getApiString());
-    }
+        if (null != operatingSystems && !operatingSystems.isEmpty()) {
+            operatingSystems.forEach(operatingSystem -> {
+                if (null != operatingSystem && OperatingSystem.NONE != operatingSystem && OperatingSystem.NOT_FOUND != operatingSystem) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_OPERATING_SYSTEM).append("=").append(operatingSystem.getApiString());
+                }
+            });
+        }
 
-    if (null != libCType && LibCType.NONE != libCType && LibCType.NOT_FOUND != libCType) {
-        queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-        queryBuilder.append(Constants.API_LIBC_TYPE).append("=").append(libCType.getApiString());
-    }
+        if (null != libcTypes && !libcTypes.isEmpty()) {
+            libcTypes.forEach(libcType -> {
+                if (null != libcType && LibCType.NONE != libcType && LibCType.NOT_FOUND != libcType) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_LIBC_TYPE).append("=").append(libcType.getApiString());
+                }
+            });
+        }
 
-    if (null != architecture && Architecture.NONE != architecture && Architecture.NOT_FOUND != architecture) {
-        queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-        queryBuilder.append(Constants.API_ARCHITECTURE).append("=").append(architecture.getApiString());
-    }
+        if (null != architectures && !architectures.isEmpty()) {
+            architectures.forEach(architecture -> {
+                if (null != architecture && Architecture.NONE != architecture && Architecture.NOT_FOUND != architecture) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_ARCHITECTURE).append("=").append(architecture.getApiString());
+                }
+            });
+        }
 
     if (null != bitness && Bitness.NONE != bitness && Bitness.NOT_FOUND != bitness) {
         queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
         queryBuilder.append(Constants.API_BITNESS).append("=").append(bitness.getApiString());
     }
 
-    if (null != archiveType && ArchiveType.NONE != archiveType && ArchiveType.NOT_FOUND != archiveType) {
-        queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
-        queryBuilder.append(Constants.API_ARCHIVE_TYPE).append("=").append(archiveType.getApiString());
-    }
+        if (null != archiveTypes && !archiveTypes.isEmpty()) {
+            archiveTypes.forEach(archiveType -> {
+                if (null != archiveType && ArchiveType.NONE != archiveType && ArchiveType.NOT_FOUND != archiveType) {
+                    queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
+                    queryBuilder.append(Constants.API_ARCHIVE_TYPE).append("=").append(archiveType.getApiString());
+                }
+            });
+        }
 
     if (null != packageType && PackageType.NONE != packageType && PackageType.NOT_FOUND != packageType) {
         queryBuilder.append(queryBuilder.length() == initialLength ? "?" : "&");
